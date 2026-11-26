@@ -7,7 +7,7 @@
 **Docente:** Prof. Francisco A. Rodrigues  
 **Alunos:**
 - Pedro Henrique de Sousa Prestes (15507819)
-- `<Nome>` (`<nº USP>`)
+- Laura Pazini Medeiros (15468452)
 - `<Nome>` (`<nº USP>`)
 
 ---
