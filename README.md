@@ -8,7 +8,8 @@
 **Alunos:**
 - Pedro Henrique de Sousa Prestes (15507819)
 - Laura Pazini Medeiros (15468452)
-- `<Nome>` (`<nº USP>`)
+- Pedro Lunkes Villela (15484287)
+- Juan Henriques Passos (15464826)
 
 ---
 
