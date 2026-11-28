@@ -124,15 +124,12 @@ Registrados depois da revisão independente do notebook:
 
 ## Referências
 
-- Fafchamps, M., & Gubert, F. (2007). The formation of risk sharing networks. *Journal of Development Economics*, 83(2), 326–350.
-- Gift, P. (2021). The impact of new judging criteria on 10-8 scores in MMA. *Journal of Sports Analytics*, 7(4), 235–246. https://doi.org/10.3233/JSA-200478
 - James, L. P., Robertson, S., Haff, G. G., Beckman, E. M., & Kelly, V. G. (2016). Identifying the performance characteristics of a winning outcome in elite mixed martial arts competition. *Journal of Science and Medicine in Sport*, 20(3), 296–301. https://doi.org/10.1016/j.jsams.2016.08.001. Publicado online em 2016; 234 lutas do UFC de julho a dezembro de 2014.
 - James, L. P., Sweeting, A. J., Kelly, V. G., & Robertson, S. (2019). Longitudinal analysis of tactical strategy in the men's division of the Ultimate Fighting Championship. *Frontiers in Artificial Intelligence*, 2, 29. https://doi.org/10.3389/frai.2019.00029. Usa 2.831 lutas masculinas com vencedor, de 2000 a 2015; nMDS e RIPPER.
-- Latshaw, N. JudgeAI. Análise independente, sem revisão por pares. A URL original do blog não foi confirmada. Os resultados são descritos em https://agentmma.com/mma-lab/ufc-round-judging-criteria, que cita 1.670 decisões de 2011 a 2020 e 5.238 rounds. Conferir antes da entrega.
-- Miarka, B., Brito, C. J., Moreira, D. G., & Amtmann, J. (2018). Differences by ending rounds and other rounds in time-motion analysis of mixed martial arts: Implications for assessment and training. *Journal of Strength and Conditioning Research*, 32(2), 534–544.
 - Miarka, B., Vecchio, F. B. D., Camey, S., & Amtmann, J. A. (2016). Comparisons: Technical-tactical and time-motion analysis of mixed martial arts by outcomes. *Journal of Strength and Conditioning Research*, 30(7), 1975–1984.
+- Miarka, B., Brito, C. J., Moreira, D. G., & Amtmann, J. (2018). Differences by ending rounds and other rounds in time-motion analysis of mixed martial arts: Implications for assessment and training. *Journal of Strength and Conditioning Research*, 32(2), 534–544.
 - Mood, C. (2010). Logistic regression: Why we cannot do what we think we can do, and what we can do about it. *European Sociological Review*, 26(1), 67–82.
-- Nadeau, C., & Bengio, Y. (2003). Inference for the generalization error. *Machine Learning*, 52(3), 239–281.
+- Fafchamps, M., & Gubert, F. (2007). The formation of risk sharing networks. *Journal of Development Economics*, 83(2), 326–350.
+- Gift, P. (2021). The impact of new judging criteria on 10-8 scores in MMA. *Journal of Sports Analytics*, 7(4), 235–246. https://doi.org/10.3233/JSA-200478
+- Latshaw, N. JudgeAI. Análise independente, sem revisão por pares. A URL original do blog não foi confirmada. Os resultados são descritos em https://agentmma.com/mma-lab/ufc-round-judging-criteria, que cita 1.670 decisões de 2011 a 2020 e 5.238 rounds. Conferir antes da entrega.
 - Dados: UFC Stats (http://ufcstats.com), via `ufc-stats-scraper` (https://github.com/JuanHPassos/ufc-stats-scraper), coleta de 2026-09-21.
-
-As referências ainda precisam ser conferidas nas fontes antes da entrega.
