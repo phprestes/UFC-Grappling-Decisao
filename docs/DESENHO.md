@@ -1,6 +1,6 @@
 # Desenho da pesquisa
 
-Este documento registra o desenho do projeto e as decisões tomadas antes de olhar os resultados. O notebook segue este roteiro.
+Este documento registra o desenho do projeto e as decisões tomadas antes de olhar os resultados. O notebook segue este roteiro. As mudanças feitas depois estão na Seção 9 (desvios do plano), e os resultados, no notebook e no `README.md`.
 
 ## 1. Origem da hipótese
 
@@ -46,13 +46,14 @@ Os dois resultados são informativos: se o efeito encolhe, o achado original est
 
 - **Fonte:** UFC Stats, coleta de 2026-09-21 (`data/ufc-stats-2026-09-21/`).
 - **Janela:** 2015-01-01 até a coleta. É posterior à amostra original, tem cobertura completa de tempo de controle e inclui a revisão de regras de 2017.
-- **Exclusões:** empates, *no contests*, desqualificações, resultados revertidos (`OVERTURNED`), `CNC`, `OTHER`, lutas sem estatísticas e lutas sem tempo de controle (reportar quantas e testar se a ausência é aleatória).
+- **Exclusões:** empates, *no contests*, desqualificações, resultados revertidos (`OVERTURNED`), `CNC`, `OTHER`, lutas sem estatísticas e lutas sem tempo de controle. Na janela saíram 47 empates, 59 *no contests* e 13 desqualificações; nenhuma luta ficou sem estatísticas ou sem tempo de controle.
+- **Duração mínima:** 60 s. Lutas mais curtas inflam as taxas por minuto; saíram 178 KO/TKO e 33 finalizações. A Seção 13 testa 30 s e 120 s.
 - **Estratos:** KO/TKO, Finalização, Decisão (`U-DEC`, `S-DEC`, `M-DEC`), sendo Decisão o estrato focal. KO/TKO inclui as interrupções médicas (*doctor's stoppage*, 40 lutas) e Decisão inclui 7 decisões técnicas (faltas acidentais, 11 a 15 min).
-- **Tamanho esperado:** cerca de 5.700 lutas na janela, das quais cerca de 2.850 decisões, 1.850 KO/TKO e 1.000 finalizações.
+- **Tamanho final:** 5.519 lutas (2.837 decisões, 1.687 KO/TKO e 995 finalizações), das 5.849 da janela. Treino de 4.139 e teste de 1.380, estratificados por estrato × y.
 
 ## 5. Unidade de análise
 
-Uma linha por luta. Um dos dois lutadores é sorteado como referência (semente registrada). y = 1 se a referência venceu. Os atributos são diferenças (referência − oponente).
+Uma linha por luta. Um dos dois lutadores é sorteado como referência (semente 42); em cada estrato, exatamente metade das lutas recebe o vencedor. y = 1 se a referência venceu. Os atributos são diferenças (referência − oponente).
 
 Isso elimina a duplicação espelhada e dá variância real a y. Atributos que não são diferenças (peso, gênero, rounds, ano) não predizem y com referência aleatória: entram só como moderadores, em subamostras.
 
@@ -65,7 +66,7 @@ Todas normalizadas pela duração da luta (`total_fight_seconds`, em minutos).
 | Grappling | golpes significativos no solo/min; tempo de controle / duração; quedas/min; precisão de quedas (sem tentativa = categoria própria); tentativas de finalização/min; reversões |
 | Striking | golpes significativos à distância/min; no clinch/min; golpes totais/min; precisão de golpes significativos; knockdowns |
 
-Reversões são raras: verificar a distribuição antes de manter (talvez binária). Lutas muito curtas inflam as taxas por minuto: definir e justificar uma duração mínima.
+Reversões são raras (89,5% dos lutadores têm zero), mas ficam como contagem. Lutas com menos de 60 s saem da amostra (Seção 4).
 
 **Blocos sem sobreposição (comparação de blocos, Seção 10.2 do notebook).** `total_pm` e `sig_acc` contam também golpes no solo, e `kd` é o mecanismo do KO. Por isso eles entram nos modelos com os 12 atributos, mas ficam fora dos dois blocos: o bloco *em pé* é `dist_pm`, `clinch_pm` e `pe_acc` (precisão à distância e no clinch), e o bloco de grappling é o da tabela acima.
 
@@ -79,7 +80,10 @@ Reversões são raras: verificar a distribuição antes de manter (talvez binár
 4. **Comparação de modelos.** AUC e calibração. A contribuição do grappling é o ganho de AUC ao somar o bloco de grappling ao bloco em pé, dentro de cada estrato e no agregado.
 5. **Secundária (exploratória).** Margem do placar dos juízes nas decisões, sem reivindicar novidade.
 
-**Sensibilidade:** só lutas de 3 rounds; sem lutas de título; 2015–2016 × 2017+; só masculino; com e sem imputação de tempo de controle; outra semente do sorteio.
+**Sensibilidade (14 variantes, Seção 13 do notebook):**
+- **Recorte:** só lutas de 3 rounds; só lutas com 10 min ou mais; sem lutas de título; 2015–2016 e 2017+; só masculino e só feminino.
+- **Reconstrução:** janela 2000+; duração mínima de 30 s e de 120 s; outra semente do sorteio.
+- **Especificação:** sem `sub_pm`; escala por quantis.
 
 ## 8. Armadilhas antecipadas
 
@@ -102,6 +106,7 @@ Registrados depois da revisão independente do notebook:
 | Erros-padrão agrupados pelos lutadores | Erros-padrão diádicos | O agrupamento por papel separava lutas do mesmo atleta |
 | Fração do erro eliminada | Métrica criada depois de ver os dados | Exploratória; o teste formal de H3a é o Wald das interações |
 | Sensibilidade com e sem imputação de controle | Não feita | Nenhuma luta da janela tem controle ausente |
+| Seis variantes de sensibilidade | Catorze | Somadas: só feminino, só lutas com 10+ min, janela 2000+, duração mínima de 30 s e 120 s, sem `sub_pm`, escala por quantis |
 
 ## 10. Disponibilidade dos dados no UFC Stats
 
@@ -119,13 +124,15 @@ Registrados depois da revisão independente do notebook:
 
 ## Referências
 
-- James, L. P., Robertson, S., Haff, G. G., Beckman, E. M., & Kelly, V. G. (2016). Identifying the performance characteristics of a winning outcome in elite mixed martial arts competition. *Journal of Science and Medicine in Sport*.
-- James, L. P. et al. (2019). *Frontiers in Artificial Intelligence*.
-- Miarka, B. et al. (2016). *Journal of Strength and Conditioning Research*, 30(7), 1975–1984.
-- Miarka, B. et al. (2018). *Journal of Strength and Conditioning Research*, 32(2), 534–544.
-- Gift, P. (2021). *Journal of Sports Analytics*.
-- Latshaw, N. JudgeAI.
 - Fafchamps, M., & Gubert, F. (2007). The formation of risk sharing networks. *Journal of Development Economics*, 83(2), 326–350.
+- Gift, P. (2021). The impact of new judging criteria on 10-8 scores in MMA. *Journal of Sports Analytics*, 7(4), 235–246. https://doi.org/10.3233/JSA-200478
+- James, L. P., Robertson, S., Haff, G. G., Beckman, E. M., & Kelly, V. G. (2016). Identifying the performance characteristics of a winning outcome in elite mixed martial arts competition. *Journal of Science and Medicine in Sport*, 20(3), 296–301. https://doi.org/10.1016/j.jsams.2016.08.001. Publicado online em 2016; 234 lutas do UFC de julho a dezembro de 2014.
+- James, L. P., Sweeting, A. J., Kelly, V. G., & Robertson, S. (2019). Longitudinal analysis of tactical strategy in the men's division of the Ultimate Fighting Championship. *Frontiers in Artificial Intelligence*, 2, 29. https://doi.org/10.3389/frai.2019.00029. Usa 2.831 lutas masculinas com vencedor, de 2000 a 2015; nMDS e RIPPER.
+- Latshaw, N. JudgeAI. Análise independente, sem revisão por pares. A URL original do blog não foi confirmada. Os resultados são descritos em https://agentmma.com/mma-lab/ufc-round-judging-criteria, que cita 1.670 decisões de 2011 a 2020 e 5.238 rounds. Conferir antes da entrega.
+- Miarka, B., Brito, C. J., Moreira, D. G., & Amtmann, J. (2018). Differences by ending rounds and other rounds in time-motion analysis of mixed martial arts: Implications for assessment and training. *Journal of Strength and Conditioning Research*, 32(2), 534–544.
+- Miarka, B., Vecchio, F. B. D., Camey, S., & Amtmann, J. A. (2016). Comparisons: Technical-tactical and time-motion analysis of mixed martial arts by outcomes. *Journal of Strength and Conditioning Research*, 30(7), 1975–1984.
 - Mood, C. (2010). Logistic regression: Why we cannot do what we think we can do, and what we can do about it. *European Sociological Review*, 26(1), 67–82.
+- Nadeau, C., & Bengio, Y. (2003). Inference for the generalization error. *Machine Learning*, 52(3), 239–281.
+- Dados: UFC Stats (http://ufcstats.com), via `ufc-stats-scraper` (https://github.com/JuanHPassos/ufc-stats-scraper), coleta de 2026-09-21.
 
-Títulos, volumes e DOIs ainda precisam ser conferidos.
+As referências ainda precisam ser conferidas nas fontes antes da entrega.
