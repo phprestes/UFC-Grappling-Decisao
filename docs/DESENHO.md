@@ -47,7 +47,7 @@ Os dois resultados são informativos: se o efeito encolhe, o achado original est
 - **Fonte:** UFC Stats, coleta de 2026-09-21 (`data/ufc-stats-2026-09-21/`).
 - **Janela:** 2015-01-01 até a coleta. É posterior à amostra original, tem cobertura completa de tempo de controle e inclui a revisão de regras de 2017.
 - **Exclusões:** empates, *no contests*, desqualificações, resultados revertidos (`OVERTURNED`), `CNC`, `OTHER`, lutas sem estatísticas e lutas sem tempo de controle (reportar quantas e testar se a ausência é aleatória).
-- **Estratos:** KO/TKO, Finalização, Decisão (`U-DEC`, `S-DEC`, `M-DEC`), sendo Decisão o estrato focal.
+- **Estratos:** KO/TKO, Finalização, Decisão (`U-DEC`, `S-DEC`, `M-DEC`), sendo Decisão o estrato focal. KO/TKO inclui as interrupções médicas (*doctor's stoppage*, 40 lutas) e Decisão inclui 7 decisões técnicas (faltas acidentais, 11 a 15 min).
 - **Tamanho esperado:** cerca de 5.700 lutas na janela, das quais cerca de 2.850 decisões, 1.850 KO/TKO e 1.000 finalizações.
 
 ## 5. Unidade de análise
@@ -67,12 +67,16 @@ Todas normalizadas pela duração da luta (`total_fight_seconds`, em minutos).
 
 Reversões são raras: verificar a distribuição antes de manter (talvez binária). Lutas muito curtas inflam as taxas por minuto: definir e justificar uma duração mínima.
 
+**Blocos sem sobreposição (comparação de blocos, Seção 10.2 do notebook).** `total_pm` e `sig_acc` contam também golpes no solo, e `kd` é o mecanismo do KO. Por isso eles entram nos modelos com os 12 atributos, mas ficam fora dos dois blocos: o bloco *em pé* é `dist_pm`, `clinch_pm` e `pe_acc` (precisão à distância e no clinch), e o bloco de grappling é o da tabela acima.
+
 ## 7. Análise
 
 1. **Descritiva.** Cohen's *d* com IC 95% por estrato (bootstrap sobre lutas), em forest plot comparável à Figura 1 do original.
 2. **Replicação.** Árvores por estrato com mínimo de 10 casos por folha e validação cruzada 10-fold, para comparar com as regras de James et al.
-3. **Teste formal de H3.** Regressão logística no conjunto completo com interações estrato × indicador. Erros-padrão agrupados pelos lutadores. O teste é a significância das interações (Wald). Comparar coeficientes "no olho" não é teste.
-4. **Comparação de modelos.** AUC, calibração e razão de verossimilhança entre modelos só-striking, só-grappling e completo, dentro de cada estrato.
+3. **Teste formal de H3.** Regressão logística no conjunto completo com interações estrato × indicador. Erros-padrão diádicos (Fafchamps e Gubert, 2007): somam os escores de todo par de lutas com um lutador em comum, qualquer que seja o papel dele (referência ou oponente). O teste é a significância das interações (Wald). Comparar coeficientes "no olho" não é teste.
+   - **H3c** é testada pela razão β_dist / β_ground (decisões contra agregado). Coeficientes logit de amostras diferentes não se comparam em nível, porque todos crescem quando o ajuste melhora (não colapsabilidade; Mood, 2010). A razão cancela esse fator comum.
+   - Os três testes confirmatórios (H3a, H3b, H3c) são corrigidos por Holm.
+4. **Comparação de modelos.** AUC e calibração. A contribuição do grappling é o ganho de AUC ao somar o bloco de grappling ao bloco em pé, dentro de cada estrato e no agregado.
 5. **Secundária (exploratória).** Margem do placar dos juízes nas decisões, sem reivindicar novidade.
 
 **Sensibilidade:** só lutas de 3 rounds; sem lutas de título; 2015–2016 × 2017+; só masculino; com e sem imputação de tempo de controle; outra semente do sorteio.
@@ -80,13 +84,26 @@ Reversões são raras: verificar a distribuição antes de manter (talvez binár
 ## 8. Armadilhas antecipadas
 
 - **Viés de seleção.** Condicionar na decisão é condicionar em um evento pós-tratamento: lutas que chegam à decisão são mais equilibradas, e o próprio grappling influencia a chance de chegar lá. A pergunta é descritiva e condicional ("entre as lutas que chegam à decisão, o que distingue vencedores?"), não causal.
-- **Restrição de amplitude.** A menor variância dos indicadores nas decisões pode, sozinha, reduzir tamanhos de efeito padronizados. Por isso os coeficientes do teste formal usam a escala da amostra inteira.
-- **Múltiplos testes.** Hipóteses fixadas antes de rodar a Seção 8 do notebook.
+- **Restrição de amplitude.** A menor variância dos indicadores nas decisões pode, sozinha, reduzir tamanhos de efeito padronizados. Padronizar pela amostra inteira só põe os coeficientes na mesma unidade; não corrige a restrição. Parte da menor variância vem também da duração: taxas por minuto variam menos em lutas longas, com ou sem seleção. A Seção 13 testa um recorte só com lutas de 10 min ou mais.
+- **Circularidade dos juízes.** Nas decisões, a circularidade mecânica sai, mas entra outra: os juízes pontuam com base nos mesmos golpes e no mesmo controle usados como preditores. Nas decisões, a pergunta passa a ser o que os juízes premiam.
+- **Múltiplos testes.** Hipóteses fixadas antes de rodar a Seção 8 do notebook; os três testes confirmatórios são corrigidos por Holm. As variantes de sensibilidade são descritivas.
 - **Definição de tempo de controle.** O UFC Stats não publica glossário. Não está claro se inclui controle no clinch contra a grade.
 - **Sem *offensive passes*.** Um dos indicadores do Modelo 1 de James et al. não existe no UFC Stats. O tempo de controle cobre a mesma dimensão (domínio posicional) com uma medida contínua.
 - **Vazamento.** Ordem A/B pré-2010 lista o vencedor primeiro; cartel e médias de `fighters` incluem lutas futuras.
 
-## 9. Disponibilidade dos dados no UFC Stats
+## 9. Desvios do plano
+
+Registrados depois da revisão independente do notebook:
+
+| Plano | O que foi feito | Por quê |
+|---|---|---|
+| Árvores com validação 10-fold | 5-fold (Seção 9) e 5 × 5 repetida (Seção 10) | Mesmo protocolo para todos os modelos |
+| Razão de verossimilhança entre blocos | ΔAUC e fração do erro eliminada por bloco, na validação cruzada | Compara modelos lineares e não lineares na mesma escala |
+| Erros-padrão agrupados pelos lutadores | Erros-padrão diádicos | O agrupamento por papel separava lutas do mesmo atleta |
+| Fração do erro eliminada | Métrica criada depois de ver os dados | Exploratória; o teste formal de H3a é o Wald das interações |
+| Sensibilidade com e sem imputação de controle | Não feita | Nenhuma luta da janela tem controle ausente |
+
+## 10. Disponibilidade dos dados no UFC Stats
 
 | Variável | Disponível | Origem |
 |---|---|---|
@@ -108,5 +125,7 @@ Reversões são raras: verificar a distribuição antes de manter (talvez binár
 - Miarka, B. et al. (2018). *Journal of Strength and Conditioning Research*, 32(2), 534–544.
 - Gift, P. (2021). *Journal of Sports Analytics*.
 - Latshaw, N. JudgeAI.
+- Fafchamps, M., & Gubert, F. (2007). The formation of risk sharing networks. *Journal of Development Economics*, 83(2), 326–350.
+- Mood, C. (2010). Logistic regression: Why we cannot do what we think we can do, and what we can do about it. *European Sociological Review*, 26(1), 67–82.
 
 Títulos, volumes e DOIs ainda precisam ser conferidos.

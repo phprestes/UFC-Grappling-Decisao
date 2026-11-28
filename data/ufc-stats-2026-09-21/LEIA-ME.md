@@ -7,11 +7,9 @@ números diferentes, então a análise deve fixar esta coleta.
 
 ## O que tem aqui
 
-- `tabelas/` — as 5 tabelas, em três formatos (use o que preferir, o conteúdo é o mesmo):
-  - `*.parquet` — **recomendado**: tipos já corretos (inteiros nulos, datas, booleanos),
-    carrega com `pd.read_parquet("fights.parquet")`;
-  - `*.csv` — para trocar com outras ferramentas;
-  - `ufc_stats.sqlite` — se preferir SQL (chaves primárias já declaradas).
+- `*.parquet` — as 5 tabelas, com tipos já corretos (inteiros nulos, datas, booleanos);
+  carregue com `pd.read_parquet("fights.parquet")`. A coleta original também gera CSV e
+  SQLite com o mesmo conteúdo, mas neste repositório só entram os arquivos Parquet.
 - `relatorios/validation_report.md` — as 13 checagens de qualidade. **Todas passaram.**
 - `relatorios/coverage_report.md` — a partir de que ano cada campo é confiável, % de nulos
   por coluna e ano, lutas por método e ano.

@@ -74,8 +74,35 @@ O notebook deve ser executado a partir da raiz do repositório (os caminhos são
 
 ## 6. Resultados
 
-`<Preencher: n por estrato, figuras principais (forest plot de Cohen's d por estrato e ΔAUC do bloco de grappling), resultado dos testes de interação.>`
+Amostra analítica: **5.519 lutas** (2.837 decisões, 1.687 KO/TKO, 995 finalizações), com 4.139 no treino e 1.380 no teste.
+
+**Contribuição do grappling** (logística, validação cruzada 5 × 5 no treino). É a fração do erro do modelo só com golpes em pé (`dist_pm`, `clinch_pm`, `pe_acc`) que o bloco de grappling elimina. É uma medida exploratória.
+
+| | KO/TKO | Finalização | Decisão | Agregado |
+|---|---|---|---|---|
+| Fração do erro eliminada pelo grappling | 0,80 | 0,97 | **0,58** [0,53; 0,63] | 0,70 |
+| Idem, sem `sub_pm` | 0,80 | 0,53 | **0,57** | 0,58 |
+
+**Testes formais** (logística com interação estrato × indicador, erros-padrão diádicos, Holm):
+
+- **H3a:** os efeitos de grappling mudam entre estratos (χ²(14) = 172,4, p < 0,001), mas sem o padrão uniforme previsto.
+- **H3b:** inconclusiva. O sinal de β(controle) − β(chão) depende da escala.
+- **H3c:** a razão β_dist / β_chão não muda (0,64 contra 0,60; IC da diferença: −0,15 a 0,25). Mesmo assim, o bloco em pé acrescenta mais nas decisões (ΔAUC de 0,096, contra 0,045 no agregado).
+
+**Sensibilidade:** nas 14 variantes, a fração do erro nas decisões fica entre 0,56 e 0,64.
 
 ## 7. Conclusão
 
-`<Preencher: a hipótese foi confirmada ou refutada, principais limitações (viés de seleção ao condicionar na decisão) e próximos passos.>`
+**A hipótese foi refutada na forma forte.** O grappling encolhe nas decisões, mas não se dissolve. A parte que some é a da mecânica do fim da luta: sem as tentativas de finalização, as decisões empatam com o modelo agregado. Nas decisões, o grappling diz mais sobre o que os juízes premiam do que sobre o que vence lutas.
+
+As principais limitações são três:
+
+- **Viés de seleção:** condicionar na decisão é condicionar em um evento posterior ao tratamento.
+- **Circularidade dos juízes:** eles pontuam com as mesmas estatísticas usadas como preditoras.
+- **Medida exploratória:** a fração do erro foi definida depois de ver os dados.
+
+**Próximos passos:**
+
+- análise round a round com `round_stats`;
+- métricas fixadas antes da análise, com margem de equivalência;
+- modelo multinomial do desfecho.
